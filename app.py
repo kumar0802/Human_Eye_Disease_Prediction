@@ -6,16 +6,25 @@ from recommendation import cnv,dme,drusen,normal
 import tempfile
 
 
-#Tensorflow Model Prediction
+@st.cache_resource
+def load_model():
+    return tf.keras.models.load_model("Trained_Model.keras")
+
+model = load_model()
+
 def model_prediction(test_image_path):
-    model = tf.keras.models.load_model("Trained_Model.keras")
-    img = tf.keras.utils.load_img(test_image_path, target_size=(224, 224))
+    img = tf.keras.utils.load_img(
+        test_image_path,
+        target_size=(224, 224)
+    )
+
     x = tf.keras.utils.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
-    predictions = model.predict(x)
-    return np.argmax(predictions) #return index of max element
 
+    predictions = model.predict(x)
+
+    return np.argmax(predictions)
 #Sidebar
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page",["Home","About","Disease Identification"])
